@@ -43,8 +43,7 @@ ReadFieldValue(Message *message, const FieldDescriptor *field, xmlNode *node) {
 	case FieldDescriptor::CPPTYPE_ENUM:
 	{
 		for (int index = 0; index < field->enum_type()->value_count(); ++index) {
-			string name(field->enum_type()->value(index)->name());
-			if (name == value)
+			if (field->enum_type()->value(index)->name() == value)
 				field->is_repeated() ?
 						message->GetReflection()->AddEnum(message, field, field->enum_type()->value(index)) :
 						message->GetReflection()->SetEnum(message, field, field->enum_type()->value(index));
