@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 
 #include <string>
 
@@ -20,12 +19,14 @@ ReadFieldValue(Message *message, const FieldDescriptor *field, xmlNode *node);
 // public
 inline void
 ProtoReadXml(Message *message, xmlNode *node) {
-	for (xmlNode *childNode = node->children; childNode != 0; childNode = childNode->next) {
-		if (childNode->type == XML_ELEMENT_NODE) {
-			string name(reinterpret_cast<const char *>(childNode->name));
-			const FieldDescriptor *field = message->GetDescriptor()->FindFieldByName(name);
-			if (field)
-				ReadFieldValue(message, field, childNode);
+	for (int index = 0; index < message->GetDescriptor()->field_count(); ++index) {
+		const FieldDescriptor *field = message->GetDescriptor()->field(index);
+		for (xmlNode *childNode = node->children; childNode != 0; childNode = childNode->next) {
+			if (childNode->type == XML_ELEMENT_NODE) {
+				string name(reinterpret_cast<const char *>(childNode->name));
+				if (field->name() == name)
+					ReadFieldValue(message, field, childNode);
+			}
 		}
 	}
 }
